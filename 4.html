@@ -971,6 +971,36 @@
       .tw-credit a:hover {
         color: var(--accent-secondary);
       }
+
+      /* Share button styling */
+      .tw-share-button {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 16px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        min-width: 140px;
+      }
+
+      .tw-share-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 212, 170, 0.4);
+      }
+
+      .tw-share-button:active {
+        transform: translateY(0);
+      }
     </style>
   </head>
   <body>
@@ -1220,6 +1250,63 @@
           }
         };
 
+        // Generate share text for WhatsApp/social media
+        const generateShareText = () => {
+          const isWin = guesses.length > 0 && guesses[guesses.length - 1].statuses.every(st => st === "correct");
+          const attempts = guesses.length;
+
+          // Create emoji grid
+          const grid = guesses.map(guess =>
+            guess.statuses.map(status => {
+              switch(status) {
+                case 'correct': return '🟩'; // Green for correct
+                case 'present': return '🟨'; // Yellow for present
+                case 'absent': return '⬛'; // Black for absent
+                default: return '⬜'; // White for empty
+              }
+            }).join('')
+          ).join('\n');
+
+          const result = isWin ? `${attempts}/${MAX_ROWS}` : `X/${MAX_ROWS}`;
+
+          return `తెలుగు Wordle ${PUZZLE_TITLE} ${result}\n\n${grid}\n\nPlay at: https://kesava.github.io/telugu-wordle/`;
+        };
+
+        // Handle share button click
+        const handleShare = async () => {
+          const shareText = generateShareText();
+
+          // Try Web Share API first (works on mobile)
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: `తెలుగు Wordle ${PUZZLE_TITLE}`,
+                text: shareText
+              });
+              return;
+            } catch (err) {
+              // Fall through to clipboard
+            }
+          }
+
+          // Fallback to clipboard
+          try {
+            await navigator.clipboard.writeText(shareText);
+            setMessage("📋 Results copied to clipboard!");
+            setTimeout(() => setMessage(null), 2000);
+          } catch (err) {
+            // Final fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = shareText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setMessage("📋 Results copied to clipboard!");
+            setTimeout(() => setMessage(null), 2000);
+          }
+        };
+
         // Generate realistic marigold petals with natural physics
         const generateConfetti = () => {
           const pieces = [];
@@ -1434,6 +1521,13 @@
                 <div className="tw-credit" ref={creditRef}>
                   created by <a href="https://kesava.github.io/" target="_blank" rel="noopener noreferrer">kesava</a> with ❤️
                 </div>
+              )}
+
+              {/* Share button - only show when game is finished */}
+              {gameOver && (
+                <button className="tw-share-button" onClick={handleShare}>
+                  📱 Share Results
+                </button>
               )}
 
               <div className="tw-keyboard">
