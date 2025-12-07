@@ -1,0 +1,22 @@
+{
+  "name": "telugu-wordle-generator",
+  "version": "1.0.0",
+  "description": "Generator for Telugu Wordle puzzle files",
+  "main": "generate.js",
+  "scripts": {
+    "generate": "node generate.js",
+    "build": "node generate.js",
+    "dev": "node generate.js && echo 'Open index.html in your browser'",
+    "clean": "rm -f *.html",
+    "deploy": "npm run build && gh-pages -d . -s '*.html'",
+    "predeploy": "npm run build",
+    "setup-deploy": "echo 'Run: npm install && npm run deploy' && echo 'Then enable GitHub Pages in repository settings'"
+  },
+  "keywords": ["telugu", "wordle", "puzzle", "game"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "gh-pages": "^6.1.0"
+  },
+  "homepage": "."
+}
