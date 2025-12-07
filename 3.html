@@ -429,12 +429,6 @@
         z-index: 100;
       }
 
-      .tw-keyboard-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 4px;  /* Reduced from 6px */
-      }
 
       .tw-keyboard-controls {
         margin-top: 4px;
@@ -442,14 +436,14 @@
       }
 
       .tw-key {
-        min-width: 32px;  /* Smaller default for all screens */
+        min-width: 28px;  /* Even smaller for guaranteed fit */
         height: 42px;
-        padding: 0 3px;   /* Reduced padding */
+        padding: 0 2px;   /* Minimal padding */
         border-radius: 8px;
         border: none;
         background: var(--bg-tertiary);
         color: var(--text-primary);
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 600;
         cursor: pointer;
         font-family: inherit;
@@ -463,6 +457,13 @@
       /* Group spacing - REMOVED for all screens to prevent overflow */
       .tw-key.group-end {
         margin-right: 0px;  /* No extra spacing anywhere */
+      }
+
+      .tw-keyboard-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3px;  /* Even smaller gaps */
       }
 
       /* MOBILE OVERRIDE - Remove all group spacing that causes overflow */
@@ -594,9 +595,9 @@
           gap: 3px;
         }
         .tw-keyboard {
-          padding: 8px;
+          padding: 4px;  /* Reduced padding for more space */
           gap: 4px;
-          padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
+          padding-bottom: calc(4px + env(safe-area-inset-bottom, 0));
         }
         .tw-keyboard-row {
           gap: 3px;
