@@ -433,7 +433,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 6px;
+        gap: 4px;  /* Reduced from 6px */
       }
 
       .tw-keyboard-controls {
@@ -442,9 +442,9 @@
       }
 
       .tw-key {
-        min-width: 42px;
+        min-width: 32px;  /* Smaller default for all screens */
         height: 42px;
-        padding: 0 5px;
+        padding: 0 3px;   /* Reduced padding */
         border-radius: 8px;
         border: none;
         background: var(--bg-tertiary);
@@ -460,9 +460,9 @@
         overflow: hidden;
       }
 
-      /* Group spacing - add margin to specific group-ending consonants */
+      /* Group spacing - REMOVED for all screens to prevent overflow */
       .tw-key.group-end {
-        margin-right: 12px;
+        margin-right: 0px;  /* No extra spacing anywhere */
       }
 
       /* MOBILE OVERRIDE - Remove all group spacing that causes overflow */
