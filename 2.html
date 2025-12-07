@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>తెలుగు Wordle - Puzzle #2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0f0f23" />
+    <style>
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :root {
+        --bg-primary: #0f0f23;
+        --bg-secondary: #1a1a40;
+        --bg-tertiary: #262645;
+        --accent-primary: #00d4aa;
+        --accent-secondary: #7c3aed;
+        --accent-orange: #ff6b35;
+        --text-primary: #ffffff;
+        --text-secondary: #a8a8b3;
+        --text-dim: #6b6b7d;
+        --border-color: #3a3a55;
+        --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+        --shadow-sharp: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, system-ui,
+          "Noto Sans Telugu", "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .tw-app {
+        height: 100vh;
+        height: -webkit-fill-available;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: env(safe-area-inset-top, 8px) 12px env(safe-area-inset-bottom, 8px);
+        position: relative;
+        max-width: 400px;
+        margin: 0 auto;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        touch-action: manipulation;
+        overflow: hidden;
+      }
+
+      .tw-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 8px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .tw-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2px;
+      }
+
+      .tw-date-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+        margin-bottom: 6px;
+      }
+
+      .tw-current-date {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .tw-game-info {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .tw-past-indicator {
+        color: var(--accent-orange);
+        font-weight: 600;
+      }
+
+      .tw-unavailable-indicator {
+        color: #ef4444;
+        font-weight: 600;
+      }
+
+      .tw-navigation {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      .tw-nav-btn {
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-sharp);
+      }
+
+      .tw-nav-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: var(--bg-secondary);
+      }
+
+      .tw-nav-btn:not(:disabled):active {
+        transform: scale(0.95);
+      }
+
+      .tw-today-btn {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        border-color: var(--accent-primary);
+      }
+
+      .tw-subtitle {
+        width: 100%;
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        line-height: 1.3;
+        text-align: center;
+        margin-bottom: 8px;
+        opacity: 0.9;
+        flex-shrink: 0;
+      }
+
+      .tw-main {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+        justify-content: center;
+        min-height: 0;
+      }
+
+      .tw-board {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 6px 0;
+        flex-shrink: 0;
+      }
+
+      .tw-row {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        transition: opacity 0.3s ease;
+      }
+
+      .tw-row-inactive {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .tw-tile {
+        width: 55px;
+        height: 62px;
+        background: var(--bg-secondary);
+        border: 2px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 2px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        touch-action: manipulation;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .tw-tile-inactive {
+        opacity: 0.4;
+        background: var(--bg-primary);
+        border-color: rgba(58, 58, 85, 0.3);
+        box-shadow: none;
+      }
+
+      .tw-tile::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .tw-tile:not(.tw-tile-inactive):hover::before {
+        opacity: 1;
+      }
+
+      .tw-tile-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1;
+      }
+
+      .tw-tile-vowel {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--accent-orange);
+        margin-top: 2px;
+        min-height: 16px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .tw-tile-aksharam {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+      }
+
+      .tw-tile-consonant-area {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease;
+        position: relative;
+        display: inline-block;
+      }
+
+      .tw-consonant-only {
+        position: relative;
+        z-index: 2;
+      }
+
+      .tw-gunintam-only {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        color: transparent;
+      }
+
+      .tw-full-aksharam {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+
+      /* Highlight only the consonant when in wrong position */
+      .tw-highlight-wrong-position {
+        background: rgba(0, 0, 0, 0.4) !important;
+        border-radius: 6px !important;
+        padding: 2px 6px !important;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+      }
+
+      /* Highlight the full aksharam when in correct position */
+      .tw-highlight-correct {
+        background: rgba(0, 0, 0, 0.25) !important;
+        border-radius: 8px !important;
+        padding: 3px 8px !important;
+        box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      /* Enhanced Wordle-style color feedback - More prominent colors */
+      .tw-tile.empty {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+      }
+
+      .tw-tile.absent {
+        background: #787c7e !important;
+        border-color: #787c7e !important;
+        box-shadow: none !important;
+        color: white;
+      }
+
+      .tw-tile.present {
+        background: #c9b037 !important;
+        border-color: #c9b037 !important;
+        box-shadow: 0 4px 20px rgba(201, 176, 55, 0.5) !important;
+        animation: pulseYellow 0.6s ease-out;
+        color: white;
+      }
+
+      .tw-tile.correct {
+        background: #6aaa64 !important;
+        border-color: #6aaa64 !important;
+        box-shadow: 0 4px 20px rgba(106, 170, 100, 0.5) !important;
+        animation: pulseGreen 0.6s ease-out;
+        color: white;
+      }
+
+      /* Ensure text is visible on colored backgrounds */
+      .tw-tile.absent .tw-tile-vowel,
+      .tw-tile.present .tw-tile-vowel,
+      .tw-tile.correct .tw-tile-vowel {
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .tw-tile.absent .tw-tile-consonant-area,
+      .tw-tile.absent .tw-tile-aksharam,
+      .tw-tile.present .tw-tile-consonant-area,
+      .tw-tile.present .tw-tile-aksharam,
+      .tw-tile.correct .tw-tile-consonant-area,
+      .tw-tile.correct .tw-tile-aksharam {
+        color: white;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      }
+
+      @keyframes pulseYellow {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(201, 176, 55, 0.8);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 15px rgba(201, 176, 55, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 4px 20px rgba(201, 176, 55, 0.5);
+        }
+      }
+
+      @keyframes pulseGreen {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(106, 170, 100, 0.8);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 15px rgba(106, 170, 100, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 4px 20px rgba(106, 170, 100, 0.5);
+        }
+      }
+
+      .tw-message-area {
+        min-height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .tw-message {
+        background: var(--bg-tertiary);
+        border-radius: 16px;
+        padding: 8px 16px;
+        display: inline-block;
+        border: 1px solid var(--border-color);
+        font-size: 0.8rem;
+        font-weight: 500;
+        box-shadow: var(--shadow-soft);
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Enhanced Keyboard */
+      .tw-keyboard {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+        flex-shrink: 0;
+      }
+
+      .tw-keyboard-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .tw-keyboard-controls {
+        margin-top: 4px;
+        gap: 12px;
+      }
+
+      .tw-key {
+        min-width: 40px;
+        height: 42px;
+        padding: 0 5px;
+        border-radius: 8px;
+        border: none;
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tw-key::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .tw-key:active {
+        transform: scale(0.95);
+        box-shadow: var(--shadow-sharp);
+      }
+
+      .tw-key:active::before {
+        opacity: 1;
+      }
+
+      /* Keyboard key status colors - matching exact Wordle colors */
+      .tw-key.empty {
+        background: var(--bg-tertiary);
+      }
+
+      .tw-key.absent {
+        background: #222238 !important;
+        border-color: #222238 !important;
+        color: #9999a5 !important;
+      }
+
+      .tw-key.present {
+        background: #c9b037 !important;
+        border-color: #c9b037 !important;
+        box-shadow: 0 4px 15px rgba(201, 176, 55, 0.3);
+        color: white !important;
+      }
+
+      .tw-key.correct {
+        background: #6aaa64 !important;
+        border-color: #6aaa64 !important;
+        box-shadow: 0 4px 15px rgba(106, 170, 100, 0.3);
+        color: white !important;
+      }
+
+      .tw-key.special {
+        min-width: 80px;
+        height: 42px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent-secondary), #5b21b6);
+        border-color: var(--accent-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .tw-key.special:active {
+        background: linear-gradient(135deg, #6d28d9, #4c1d95);
+      }
+
+      /* Mobile-first responsive adjustments */
+      @media (max-width: 390px) {
+        .tw-tile {
+          width: 60px;
+          height: 72px;
+        }
+        .tw-tile-cons {
+          font-size: 1.6rem;
+        }
+        .tw-tile-vowel {
+          font-size: 0.9rem;
+        }
+        .tw-key {
+          min-width: 42px;
+          height: 52px;
+          font-size: 1rem;
+        }
+        .tw-key.special {
+          min-width: 70px;
+          font-size: 0.8rem;
+        }
+      }
+
+      @media (min-width: 391px) and (max-width: 480px) {
+        .tw-tile {
+          width: 65px;
+          height: 76px;
+        }
+        .tw-key {
+          min-width: 45px;
+          height: 54px;
+        }
+        .tw-key.special {
+          min-width: 75px;
+        }
+      }
+
+      /* Dark mode enhancements for OLED displays */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-primary: #000000;
+          --bg-secondary: #0a0a0f;
+        }
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        .tw-tile {
+          border-width: 3px;
+        }
+        .tw-key {
+          border-width: 2px;
+        }
+      }
+
+      /* Reduce motion for accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React + ReactDOM + Babel from CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- React code -->
+    <script type="text/babel">
+      const { useState, useMemo } = React;
+
+      // Gunintam (vowel sign) characters in Telugu
+      const GUNINTAM_SIGNS = [
+        "ా",
+        "ి",
+        "ీ",
+        "ు",
+        "ూ",
+        "ె",
+        "ే",
+        "ై",
+        "ొ",
+        "ో",
+        "ౌ"
+      ];
+
+      // Base consonants keyboard – user enters only these.
+      const KEYBOARD_CONSONANTS = [
+        "క", "ఖ", "గ", "ఘ", "ఙ",
+        "చ", "ఛ", "జ", "ఝ", "ఞ",
+        "ట", "ఠ", "డ", "ఢ", "ణ",
+        "త", "థ", "ద", "ధ", "న",
+        "ప", "ఫ", "బ", "భ", "మ",
+        "య", "ర", "ల", "వ", "శ",
+        "ష", "స", "హ", "ళ", "ఱ"
+      ];
+
+      // Helper: split aksharam into [baseConsonant, gunintam]
+      function splitAksharam(ak) {
+        if (!ak) return ["", ""];
+        const last = ak[ak.length - 1];
+        if (GUNINTAM_SIGNS.includes(last)) {
+          return [ak.slice(0, ak.length - 1), last];
+        }
+        // no explicit gunintam (inherent అ)
+        return [ak, ""];
+      }
+
+      function getGunintam(ak) {
+        return splitAksharam(ak)[1];
+      }
+
+      function getBaseConsonant(ak) {
+        return splitAksharam(ak)[0];
+      }
+
+      // ==================== CONFIGURATION ====================
+      // Configuration injected by template generator
+      const GAME_MODE = 4;
+      const CURRENT_PUZZLE = 2;
+      const PUZZLE_WORD = ["ప","ద","ము","లు"];
+      const PUZZLE_TITLE = "Puzzle #2";
+
+      const MAX_ROWS = 6;
+
+      function evaluateGuess(guessAksharas, solution) {
+        const len = solution.length;
+        const statuses = Array(len).fill("absent");
+
+        // Extract only consonants from guess and solution for comparison
+        const guessConsonants = guessAksharas.map(ak => getBaseConsonant(ak));
+        const solutionConsonants = solution.map(ak => getBaseConsonant(ak));
+
+        // Create a copy of solution consonants to track remaining letters
+        const remaining = [...solutionConsonants];
+
+        // First pass: mark correct positions (green)
+        for (let i = 0; i < len; i++) {
+          if (guessConsonants[i] === solutionConsonants[i]) {
+            statuses[i] = "correct";
+            remaining[i] = ""; // Mark as used
+          }
+        }
+
+        // Second pass: mark present letters in wrong positions (yellow)
+        for (let i = 0; i < len; i++) {
+          if (statuses[i] === "correct") continue; // Skip already correct letters
+
+          const guessConsonant = guessConsonants[i];
+          const remainingIndex = remaining.indexOf(guessConsonant);
+
+          if (remainingIndex !== -1) {
+            statuses[i] = "present";
+            remaining[remainingIndex] = ""; // Mark as used
+          } else {
+            statuses[i] = "absent"; // Letter not in word (red/gray)
+          }
+        }
+
+        return statuses;
+      }
+
+      function TeluguWordle() {
+        const wordLength = GAME_MODE;
+        const [solution] = useState(() => PUZZLE_WORD);
+        const [guesses, setGuesses] = useState([]); // { consonants: [], statuses: [] }
+        const [currentGuess, setCurrentGuess] = useState([]); // consonants only
+        const [message, setMessage] = useState(null);
+        const [gameOver, setGameOver] = useState(false);
+
+        // Prevent mobile keyboard from showing
+        React.useEffect(() => {
+          const preventKeyboard = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+              return;
+            }
+            e.preventDefault();
+            document.activeElement?.blur();
+          };
+
+          const handleTouchStart = (e) => {
+            document.activeElement?.blur();
+          };
+
+          document.addEventListener('focusin', preventKeyboard);
+          document.addEventListener('touchstart', handleTouchStart);
+
+          return () => {
+            document.removeEventListener('focusin', preventKeyboard);
+            document.removeEventListener('touchstart', handleTouchStart);
+          };
+        }, []);
+
+        // Vowel pattern clue: taken from solution, fixed for the whole game.
+        const vowelPattern = useMemo(
+          () => solution.map((ak) => getGunintam(ak)),
+          [solution]
+        );
+
+        // Keyboard status – best status achieved for each consonant
+        const keyboardStatus = useMemo(() => {
+          const map = new Map();
+          const better = (oldStatus, newStatus) => {
+            const rank = {
+              empty: 0,
+              absent: 1,
+              present: 2,
+              correct: 3
+            };
+            return rank[newStatus] > rank[oldStatus] ? newStatus : oldStatus;
+          };
+
+          for (const guess of guesses) {
+            guess.consonants.forEach((cons, i) => {
+              const st = guess.statuses[i];
+              const prev = map.get(cons) || "empty";
+              map.set(cons, better(prev, st));
+            });
+          }
+          return map;
+        }, [guesses]);
+
+        const handleKeyClick = (cons) => {
+          if (gameOver) return;
+          if (currentGuess.length >= wordLength) return;
+          setCurrentGuess((prev) => [...prev, cons]);
+          setMessage(null);
+        };
+
+        const handleBackspace = () => {
+          if (gameOver) return;
+          setCurrentGuess((prev) => prev.slice(0, -1));
+          setMessage(null);
+        };
+
+        const handleEnter = () => {
+          if (gameOver) return;
+
+          if (currentGuess.length !== wordLength) {
+            setMessage(`Need ${wordLength} consonants.`);
+            return;
+          }
+
+          // Build full aksharalu from consonant + given gunintam pattern
+          const guessAksharas = currentGuess.map(
+            (c, i) => c + (vowelPattern[i] || "")
+          );
+
+          // Always evaluate the guess - comparing consonants only
+          const statuses = evaluateGuess(guessAksharas, solution);
+          const newGuess = {
+            consonants: currentGuess,
+            statuses
+          };
+
+          const nextGuesses = [...guesses, newGuess];
+          setGuesses(nextGuesses);
+          setCurrentGuess([]);
+
+          const isWin = statuses.every((st) => st === "correct");
+          if (isWin) {
+            setMessage("🎉 Excellent! You got it!");
+            setGameOver(true);
+            return;
+          }
+
+          if (nextGuesses.length >= MAX_ROWS) {
+            setMessage(`Game over! The word was: ${solution.join("")}`);
+            setGameOver(true);
+            return;
+          }
+        };
+
+        // Build board rows with enhanced display logic
+        const rows = [];
+        for (let r = 0; r < MAX_ROWS; r++) {
+          if (r < guesses.length) {
+            // Completed row - show full aksharas
+            const fullAksharas = guesses[r].consonants.map((cons, i) =>
+              cons + (vowelPattern[i] || "")
+            );
+            rows.push({
+              consonants: guesses[r].consonants,
+              aksharas: fullAksharas,
+              statuses: guesses[r].statuses,
+              type: 'completed'
+            });
+          } else if (r === guesses.length) {
+            // Current input row - show partial aksharas as user types
+            const cons = Array(wordLength).fill("");
+            const partialAksharas = Array(wordLength).fill("");
+            currentGuess.forEach((c, idx) => {
+              cons[idx] = c;
+              partialAksharas[idx] = c + (vowelPattern[idx] || "");
+            });
+            rows.push({
+              consonants: cons,
+              aksharas: partialAksharas,
+              statuses: Array(wordLength).fill("empty"),
+              type: 'current'
+            });
+          } else {
+            // Future rows - inactive
+            rows.push({
+              consonants: Array(wordLength).fill(""),
+              aksharas: Array(wordLength).fill(""),
+              statuses: Array(wordLength).fill("empty"),
+              type: 'future'
+            });
+          }
+        }
+
+        return (
+          <div className="tw-app">
+            <header className="tw-header">
+              <div className="tw-title">
+                తెలుగు Wordle
+              </div>
+
+              <div className="tw-date-info">
+                <div className="tw-current-date">
+                  {PUZZLE_TITLE}
+                </div>
+                <div className="tw-game-info">
+                  {GAME_MODE} letters
+                </div>
+              </div>
+
+              <div className="tw-navigation">
+                <a href="1.html" className="tw-nav-btn" style="pointer-events: none; opacity: 0.4;">
+                  ← Previous
+                </a>
+                <a href="index.html" className="tw-nav-btn">
+                  Latest
+                </a>
+                <a href="3.html" className="tw-nav-btn">Next →
+                </a>
+              </div>
+            </header>
+
+            <div className="tw-subtitle">
+              <strong>Vowel signs (gunintam)</strong> are given as clues.
+              <strong> Guess only consonants</strong> to form complete Telugu syllables!
+            </div>
+
+            <main className="tw-main">
+              <div className="tw-board">
+                {rows.map((row, rIdx) => (
+                  <div className={`tw-row ${row.type === 'future' ? 'tw-row-inactive' : ''}`} key={rIdx}>
+                    {Array.from({ length: wordLength }).map((_, cIdx) => {
+                      const st = row.statuses[cIdx];
+                      const vowel = vowelPattern[cIdx] || "";
+                      const aksharam = row.aksharas[cIdx] || "";
+                      const consonant = row.consonants[cIdx] || "";
+
+                      return (
+                        <div className={`tw-tile ${st} ${row.type === 'future' ? 'tw-tile-inactive' : ''}`} key={cIdx}>
+                          <div className="tw-tile-inner">
+                            <div className="tw-tile-vowel">
+                              {vowel || "\u00A0"}
+                            </div>
+                            <div className="tw-tile-consonant-area">
+                              {row.type === 'completed' ? (
+                                // Completed rows: Different display based on correctness
+                                st === 'correct' ? (
+                                  // Green: Highlight the full aksharam (consonant + gunintam together)
+                                  <span className="tw-full-aksharam tw-highlight-correct">
+                                    {aksharam}
+                                  </span>
+                                ) : st === 'present' ? (
+                                  // Yellow: Highlight only the consonant
+                                  <>
+                                    <span className="tw-consonant-only tw-highlight-wrong-position">
+                                      {consonant}
+                                    </span>
+                                    {vowel && <span className="tw-gunintam-only">{vowel}</span>}
+                                  </>
+                                ) : (
+                                  // Gray: Show full aksharam normally
+                                  <span className="tw-full-aksharam">
+                                    {aksharam}
+                                  </span>
+                                )
+                              ) : (
+                                // Current/future rows: Show full aksharam as user types
+                                <span className="tw-full-aksharam">
+                                  {aksharam || consonant || ""}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+
+              <div className="tw-message-area">
+                {message && <div className="tw-message">{message}</div>}
+              </div>
+
+              <div className="tw-keyboard">
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(0, 5).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(5, 10).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(10, 15).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(15, 20).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(20, 25).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(25, 30).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row">
+                  {KEYBOARD_CONSONANTS.slice(30).map((c) => {
+                    const st = keyboardStatus.get(c) || "empty";
+                    return (
+                      <button
+                        key={c}
+                        className={`tw-key ${st}`}
+                        onClick={() => handleKeyClick(c)}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="tw-keyboard-row tw-keyboard-controls">
+                  <button className="tw-key special" onClick={handleBackspace}>
+                    ⌫ Delete
+                  </button>
+                  <button className="tw-key special" onClick={handleEnter}>
+                    ✓ Enter
+                  </button>
+                </div>
+              </div>
+            </main>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<TeluguWordle />);
+    </script>
+  </body>
+</html>
