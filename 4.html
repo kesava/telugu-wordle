@@ -1086,6 +1086,7 @@
 
         // Ref for auto-scrolling to active row
         const activeRowRef = useRef(null);
+        const creditRef = useRef(null);
 
         // Prevent mobile keyboard from showing
         React.useEffect(() => {
@@ -1110,10 +1111,19 @@
           };
         }, []);
 
-        // Auto-scroll to keep active row visible
+        // Auto-scroll to keep active row visible or show credit when game ends
         useEffect(() => {
-          if (activeRowRef.current && !gameOver) {
-            // Small delay to ensure DOM is updated
+          if (gameOver && creditRef.current) {
+            // Scroll to credit when game is finished
+            setTimeout(() => {
+              creditRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+              });
+            }, 200); // Slightly longer delay to let confetti start
+          } else if (activeRowRef.current && !gameOver) {
+            // Scroll to active row during gameplay
             setTimeout(() => {
               activeRowRef.current?.scrollIntoView({
                 behavior: 'smooth',
@@ -1122,7 +1132,7 @@
               });
             }, 100);
           }
-        }, [guesses.length, gameOver]); // Scroll when new row becomes active
+        }, [guesses.length, gameOver]); // Scroll when new row becomes active or game ends
 
         // Vowel pattern clue: taken from solution, fixed for the whole game.
         const vowelPattern = useMemo(
@@ -1421,7 +1431,7 @@
 
               {/* Creator credit - only show when game is finished */}
               {gameOver && (
-                <div className="tw-credit">
+                <div className="tw-credit" ref={creditRef}>
                   created by <a href="https://kesava.github.io/" target="_blank" rel="noopener noreferrer">kesava</a> with ❤️
                 </div>
               )}
