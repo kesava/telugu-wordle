@@ -527,12 +527,12 @@
       }
 
       /* Mobile-first responsive adjustments */
-      /* Extra small devices - iPhone and smaller (≤ 375px) */
-      @media (max-width: 375px) {
+      /* Small mobile devices - iPhone and similar (≤ 400px) */
+      @media (max-width: 400px) {
         .tw-app {
-          padding: env(safe-area-inset-top, 4px) 6px 0;
+          padding: env(safe-area-inset-top, 4px) 4px 0;
           gap: 4px;
-          padding-bottom: 280px; /* Reduced space for fixed keyboard */
+          padding-bottom: 270px; /* Reduced space for fixed keyboard */
         }
         .tw-header {
           margin-bottom: 4px;
@@ -565,87 +565,29 @@
           gap: 3px;
         }
         .tw-keyboard {
-          padding: 6px;
-          gap: 3px;
-          padding-bottom: calc(6px + env(safe-area-inset-bottom, 0));
+          padding: 4px;
+          gap: 2px;
+          padding-bottom: calc(4px + env(safe-area-inset-bottom, 0));
         }
         .tw-keyboard-row {
-          gap: 3px;
-        }
-        .tw-key {
-          min-width: 34px;
-          height: 38px;
-          font-size: 0.75rem;
-          padding: 0 3px;
-        }
-        .tw-key.group-end {
-          margin-right: 6px; /* Reduced spacing on small mobile */
-        }
-        .tw-key.special {
-          min-width: 58px;
-          font-size: 0.65rem;
-        }
-      }
-
-      @media (max-width: 390px) {
-        .tw-app {
-          padding: env(safe-area-inset-top, 4px) 8px 0;
-          gap: 4px;
-          padding-bottom: 280px; /* Reduced space for fixed keyboard */
-        }
-        .tw-header {
-          margin-bottom: 4px;
           gap: 2px;
         }
-        .tw-title {
-          font-size: 1.1rem;
-        }
-        .tw-subtitle {
-          font-size: 0.65rem;
-          margin-bottom: 4px;
-        }
-        .tw-tile {
-          width: 50px;
-          height: 58px;
-        }
-        .tw-tile-vowel {
-          font-size: 0.7rem;
-        }
-        .tw-tile-consonant-area,
-        .tw-tile-aksharam,
-        .tw-full-aksharam {
-          font-size: 1.2rem;
-        }
-        .tw-board {
-          gap: 3px;
-          padding: 3px 0;
-        }
-        .tw-row {
-          gap: 3px;
-        }
-        .tw-keyboard {
-          padding: 8px;
-          gap: 4px;
-          padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
-        }
-        .tw-keyboard-row {
-          gap: 4px;
-        }
         .tw-key {
-          min-width: 38px;
-          height: 40px;
-          font-size: 0.8rem;
+          min-width: 30px;
+          height: 36px;
+          font-size: 0.7rem;
+          padding: 0 2px;
         }
         .tw-key.group-end {
-          margin-right: 8px; /* Reduced spacing on mobile */
+          margin-right: 0px; /* Remove extra spacing on mobile */
         }
         .tw-key.special {
-          min-width: 64px;
-          font-size: 0.7rem;
+          min-width: 50px;
+          font-size: 0.6rem;
         }
       }
 
-      @media (min-width: 391px) and (max-width: 480px) {
+      @media (min-width: 401px) and (max-width: 480px) {
         .tw-tile {
           width: 65px;
           height: 76px;
