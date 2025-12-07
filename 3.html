@@ -436,7 +436,9 @@
       }
 
       .tw-key {
-        min-width: 28px;  /* Even smaller for guaranteed fit */
+        flex: 1 1 0;      /* Equal flex distribution - each key takes 1/8 space */
+        max-width: 50px;  /* Prevent keys from getting too large on desktop */
+        min-width: 20px;  /* Minimum readable size */
         height: 42px;
         padding: 0 2px;   /* Minimal padding */
         border-radius: 8px;
@@ -452,6 +454,8 @@
         border: 1px solid var(--border-color);
         position: relative;
         overflow: hidden;
+        box-sizing: border-box;
+        margin: 0;
       }
 
       /* Group spacing - REMOVED for all screens to prevent overflow */
@@ -461,9 +465,10 @@
 
       .tw-keyboard-row {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 3px;  /* Even smaller gaps */
+        flex-wrap: nowrap !important;  /* Force no wrapping */
+        justify-content: space-between;
+        gap: 1px;  /* Minimal gaps */
+        width: 100%;
       }
 
       /* MOBILE OVERRIDE - Remove all group spacing that causes overflow */
