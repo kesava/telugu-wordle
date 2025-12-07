@@ -48,7 +48,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: env(safe-area-inset-top, 8px) 12px env(safe-area-inset-bottom, 8px);
+        padding: env(safe-area-inset-top, 8px) 12px 0;
         position: relative;
         max-width: 400px;
         margin: 0 auto;
@@ -58,6 +58,7 @@
         touch-action: manipulation;
         overflow-y: auto;
         gap: 8px;
+        padding-bottom: 320px; /* Space for fixed keyboard */
       }
 
       .tw-header {
@@ -405,14 +406,27 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
-      /* Enhanced Keyboard */
+      /* Enhanced Keyboard - Fixed Overlay */
       .tw-keyboard {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 400px;
         display: flex;
         flex-direction: column;
         gap: 6px;
-        margin-top: 10px;
-        padding-bottom: env(safe-area-inset-bottom, 0);
-        flex-shrink: 0;
+        padding: 12px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+        background: linear-gradient(180deg,
+          rgba(15, 15, 35, 0.95) 0%,
+          rgba(15, 15, 35, 0.98) 100%);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid var(--border-color);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        z-index: 100;
       }
 
       .tw-keyboard-row {
@@ -473,9 +487,9 @@
       }
 
       .tw-key.absent {
-        background: #222238 !important;
-        border-color: #222238 !important;
-        color: #9999a5 !important;
+        background: #3a3a50 !important;
+        border-color: #3a3a50 !important;
+        color: #b8b8c0 !important;
       }
 
       .tw-key.present {
@@ -510,8 +524,9 @@
       /* Mobile-first responsive adjustments */
       @media (max-width: 390px) {
         .tw-app {
-          padding: env(safe-area-inset-top, 4px) 8px env(safe-area-inset-bottom, 4px);
+          padding: env(safe-area-inset-top, 4px) 8px 0;
           gap: 4px;
+          padding-bottom: 280px; /* Reduced space for fixed keyboard */
         }
         .tw-header {
           margin-bottom: 4px;
@@ -543,6 +558,14 @@
         .tw-row {
           gap: 3px;
         }
+        .tw-keyboard {
+          padding: 8px;
+          gap: 4px;
+          padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
+        }
+        .tw-keyboard-row {
+          gap: 2px;
+        }
         .tw-key {
           min-width: 36px;
           height: 40px;
@@ -551,13 +574,6 @@
         .tw-key.special {
           min-width: 64px;
           font-size: 0.7rem;
-        }
-        .tw-keyboard {
-          gap: 4px;
-          margin-top: 6px;
-        }
-        .tw-keyboard-row {
-          gap: 2px;
         }
       }
 
