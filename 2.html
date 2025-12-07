@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>తెలుగు Wordle - Puzzle #2</title>
+    <title>తెలుగు Wordle - Puzzle #3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -433,16 +433,16 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 4px;
+        gap: 6px;
       }
 
       .tw-keyboard-controls {
         margin-top: 4px;
-        gap: 12px;
+        gap: 40px;
       }
 
       .tw-key {
-        min-width: 40px;
+        min-width: 42px;
         height: 42px;
         padding: 0 5px;
         border-radius: 8px;
@@ -458,6 +458,11 @@
         border: 1px solid var(--border-color);
         position: relative;
         overflow: hidden;
+      }
+
+      /* Group spacing - add margin to specific group-ending consonants */
+      .tw-key.group-end {
+        margin-right: 12px;
       }
 
       .tw-key::before {
@@ -564,12 +569,15 @@
           padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
         }
         .tw-keyboard-row {
-          gap: 2px;
+          gap: 4px;
         }
         .tw-key {
-          min-width: 36px;
+          min-width: 38px;
           height: 40px;
           font-size: 0.8rem;
+        }
+        .tw-key.group-end {
+          margin-right: 8px; /* Reduced spacing on mobile */
         }
         .tw-key.special {
           min-width: 64px;
@@ -609,12 +617,292 @@
         }
       }
 
+      /* Realistic Marigold Petals Animation */
+      .tw-confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 200;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .tw-confetti.active {
+        opacity: 1;
+      }
+
+      .tw-confetti-piece {
+        position: absolute;
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6347 50%, #ff8c00 100%);
+        border-radius: 75% 20% 80% 15%;
+        animation: petal-fall var(--fall-duration, 5s) ease-out forwards;
+        transform-origin: center bottom;
+        box-shadow:
+          0 2px 8px rgba(255, 140, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4),
+          inset 0 -1px 0 rgba(139, 69, 19, 0.2);
+        opacity: 0.9;
+        filter: blur(0px);
+      }
+
+      .tw-confetti-piece::before {
+        content: '';
+        position: absolute;
+        top: 15%;
+        left: 20%;
+        width: 60%;
+        height: 70%;
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.4) 0%,
+          rgba(255, 215, 0, 0.3) 30%,
+          rgba(255, 140, 0, 0.1) 100%
+        );
+        border-radius: 70% 30% 80% 20%;
+        transform: rotate(15deg);
+        opacity: 0.8;
+      }
+
+      .tw-confetti-piece::after {
+        content: '';
+        position: absolute;
+        bottom: 10%;
+        right: 15%;
+        width: 40%;
+        height: 30%;
+        background: radial-gradient(
+          circle at center,
+          rgba(139, 69, 19, 0.3) 0%,
+          rgba(160, 82, 45, 0.2) 50%,
+          transparent 100%
+        );
+        border-radius: 50%;
+        opacity: 0.6;
+      }
+
+      .tw-confetti-piece.small {
+        width: 8px;
+        height: 16px;
+        --fall-duration: 4.5s;
+      }
+
+      .tw-confetti-piece.medium {
+        width: 12px;
+        height: 24px;
+        --fall-duration: 5.2s;
+      }
+
+      .tw-confetti-piece.large {
+        width: 16px;
+        height: 28px;
+        --fall-duration: 6s;
+      }
+
+      .tw-confetti-piece.xlarge {
+        width: 20px;
+        height: 32px;
+        --fall-duration: 6.8s;
+      }
+
+      /* Natural marigold petal color variations with enhanced realism */
+      .tw-confetti-piece:nth-child(10n) {
+        background: radial-gradient(
+          ellipse at 30% 20%,
+          #ffd700 0%,
+          #ffb347 40%,
+          #ff8c00 80%,
+          #cd853f 100%
+        );
+        opacity: 0.85;
+        border-radius: 80% 15% 75% 25%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+1) {
+        background: linear-gradient(
+          150deg,
+          #ff8c00 0%,
+          #ff4500 30%,
+          #ff6347 60%,
+          #dc143c 100%
+        );
+        opacity: 0.9;
+        border-radius: 85% 10% 80% 20%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+2) {
+        background: radial-gradient(
+          ellipse at 40% 30%,
+          #ffa500 0%,
+          #ff8c00 50%,
+          #ff7f50 80%,
+          #a0522d 100%
+        );
+        opacity: 0.8;
+        border-radius: 70% 25% 85% 15%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+3) {
+        background: linear-gradient(
+          45deg,
+          #ffb347 0%,
+          #ffa500 25%,
+          #ff8c00 50%,
+          #ff6b35 75%,
+          #d2691e 100%
+        );
+        opacity: 0.95;
+        border-radius: 75% 20% 70% 30%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+4) {
+        background: radial-gradient(
+          ellipse at 25% 40%,
+          #ff6347 0%,
+          #dc143c 40%,
+          #ff4500 70%,
+          #8b4513 100%
+        );
+        opacity: 0.88;
+        border-radius: 90% 5% 75% 25%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+5) {
+        background: linear-gradient(
+          120deg,
+          #ff7f50 0%,
+          #ff6347 30%,
+          #ff8c00 60%,
+          #daa520 100%
+        );
+        opacity: 0.92;
+        border-radius: 65% 30% 80% 20%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+6) {
+        background: radial-gradient(
+          circle at 35% 25%,
+          #ffff99 0%,
+          #ffd700 30%,
+          #ffa500 70%,
+          #cd853f 100%
+        );
+        opacity: 0.87;
+        border-radius: 80% 15% 85% 10%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+7) {
+        background: linear-gradient(
+          75deg,
+          #ff9500 0%,
+          #ff7f50 25%,
+          #ff6b35 50%,
+          #ff4500 100%
+        );
+        opacity: 0.91;
+        border-radius: 70% 25% 75% 20%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+8) {
+        background: radial-gradient(
+          ellipse at 50% 15%,
+          #ffe135 0%,
+          #ffb347 40%,
+          #ff8c00 80%,
+          #b8860b 100%
+        );
+        opacity: 0.89;
+        border-radius: 85% 10% 70% 30%;
+      }
+
+      .tw-confetti-piece:nth-child(10n+9) {
+        background: linear-gradient(
+          165deg,
+          #ffa500 0%,
+          #ff8c00 20%,
+          #ff7f50 40%,
+          #ff6347 60%,
+          #a0522d 100%
+        );
+        opacity: 0.93;
+        border-radius: 75% 20% 80% 15%;
+      }
+
+      /* Add natural petal texture and edge variations */
+      .tw-confetti-piece:nth-child(12n) {
+        border-radius: 70% 25% 75% 20%;
+        filter: blur(0.2px);
+      }
+
+      .tw-confetti-piece:nth-child(12n+1) {
+        border-radius: 85% 10% 85% 10%;
+        transform: skew(2deg, -1deg);
+      }
+
+      .tw-confetti-piece:nth-child(12n+2) {
+        border-radius: 75% 20% 80% 15%;
+        filter: saturate(1.1);
+      }
+
+      .tw-confetti-piece:nth-child(12n+3) {
+        border-radius: 90% 5% 70% 25%;
+        transform: skew(-1deg, 2deg);
+      }
+
+      .tw-confetti-piece:nth-child(12n+4) {
+        border-radius: 65% 30% 85% 15%;
+        filter: brightness(1.05);
+      }
+
+      .tw-confetti-piece:nth-child(12n+5) {
+        border-radius: 80% 15% 60% 35%;
+        transform: scaleY(1.1);
+      }
+
+      @keyframes petal-fall {
+        0% {
+          transform: translateY(-120vh) translateX(0) rotate(0deg) scale(1) rotateX(0deg);
+          opacity: 0.9;
+          filter: blur(0px);
+        }
+        15% {
+          transform: translateY(-60vh) translateX(var(--drift-1, 8px)) rotate(45deg) scale(1.05) rotateX(15deg);
+          opacity: 0.85;
+          filter: blur(0.1px);
+        }
+        35% {
+          transform: translateY(-10vh) translateX(var(--drift-2, -12px)) rotate(135deg) scale(0.98) rotateX(30deg);
+          opacity: 0.8;
+          filter: blur(0.2px);
+        }
+        55% {
+          transform: translateY(30vh) translateX(var(--drift-3, 15px)) rotate(225deg) scale(1.02) rotateX(-20deg);
+          opacity: 0.7;
+          filter: blur(0.3px);
+        }
+        75% {
+          transform: translateY(70vh) translateX(var(--drift-4, -8px)) rotate(315deg) scale(0.95) rotateX(45deg);
+          opacity: 0.5;
+          filter: blur(0.4px);
+        }
+        90% {
+          transform: translateY(100vh) translateX(var(--drift-5, 5px)) rotate(405deg) scale(0.85) rotateX(60deg);
+          opacity: 0.3;
+          filter: blur(0.5px);
+        }
+        100% {
+          transform: translateY(130vh) translateX(var(--drift-6, -3px)) rotate(450deg) scale(0.7) rotateX(90deg);
+          opacity: 0;
+          filter: blur(1px);
+        }
+      }
+
       /* Reduce motion for accessibility */
       @media (prefers-reduced-motion: reduce) {
-        * {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
+        .tw-confetti {
+          display: none;
         }
       }
     </style>
@@ -648,13 +936,10 @@
 
       // Base consonants keyboard – user enters only these.
       const KEYBOARD_CONSONANTS = [
-        "క", "ఖ", "గ", "ఘ", "ఙ",
-        "చ", "ఛ", "జ", "ఝ", "ఞ",
-        "ట", "ఠ", "డ", "ఢ", "ణ",
-        "త", "థ", "ద", "ధ", "న",
-        "ప", "ఫ", "బ", "భ", "మ",
-        "య", "ర", "ల", "వ", "శ",
-        "ష", "స", "హ", "ళ", "ఱ"
+        "క", "ఖ", "గ", "ఘ", "చ", "ఛ", "జ", "ఝ",        // Row 1: Velars + Palatals (8)
+        "ట", "ఠ", "డ", "ఢ", "ణ", "త", "థ", "ద",        // Row 2: Retroflexes + Dentals (8)
+        "ధ", "న", "ప", "ఫ", "బ", "భ", "మ", "య",        // Row 3: Dentals + Labials + Semivowel (8)
+        "ర", "ల", "వ", "శ", "ష", "స", "హ", "ళ"         // Row 4: Semivowels + Sibilants + Others (8)
       ];
 
       // Helper: split aksharam into [baseConsonant, gunintam]
@@ -678,10 +963,9 @@
 
       // ==================== CONFIGURATION ====================
       // Configuration injected by template generator
-      const GAME_MODE = 4;
-      const CURRENT_PUZZLE = 2;
-      const PUZZLE_WORD = ["ప","ద","ము","లు"];
-      const PUZZLE_TITLE = "Puzzle #2";
+      const CURRENT_PUZZLE = 3;
+      const PUZZLE_WORD = ["స","ర","దా"];
+      const PUZZLE_TITLE = "Puzzle #3";
 
       const MAX_ROWS = 6;
 
@@ -723,12 +1007,13 @@
       }
 
       function TeluguWordle() {
-        const wordLength = GAME_MODE;
+        const wordLength = PUZZLE_WORD.length; // Support both 3 and 4 letter words
         const [solution] = useState(() => PUZZLE_WORD);
         const [guesses, setGuesses] = useState([]); // { consonants: [], statuses: [] }
         const [currentGuess, setCurrentGuess] = useState([]); // consonants only
         const [message, setMessage] = useState(null);
         const [gameOver, setGameOver] = useState(false);
+        const [showConfetti, setShowConfetti] = useState(false);
 
         // Prevent mobile keyboard from showing
         React.useEffect(() => {
@@ -823,6 +1108,12 @@
           if (isWin) {
             setMessage("🎉 Excellent! You got it!");
             setGameOver(true);
+            setShowConfetti(true);
+
+            // Hide petals after animation completes
+            setTimeout(() => {
+              setShowConfetti(false);
+            }, 6000); // Extended for longer petal show
             return;
           }
 
@@ -831,6 +1122,76 @@
             setGameOver(true);
             return;
           }
+        };
+
+        // Generate realistic marigold petals with natural physics
+        const generateConfetti = () => {
+          const pieces = [];
+          const sizes = ['small', 'medium', 'large', 'xlarge'];
+          const sizeWeights = [0.3, 0.4, 0.2, 0.1]; // More small and medium petals
+
+          for (let i = 0; i < 80; i++) { // More petals for fuller celebration
+            // Weighted random size selection for more natural distribution
+            const rand = Math.random();
+            let sizeIndex = 0;
+            let cumulative = 0;
+            for (let j = 0; j < sizeWeights.length; j++) {
+              cumulative += sizeWeights[j];
+              if (rand <= cumulative) {
+                sizeIndex = j;
+                break;
+              }
+            }
+            const sizeClass = sizes[sizeIndex];
+
+            // Natural positioning with slight center bias
+            const centerBias = 0.3;
+            const left = Math.max(0, Math.min(100,
+              (Math.random() * (1 - centerBias) + Math.random() * centerBias * 0.5 + 0.25) * 100
+            ));
+
+            // Staggered release timing for more natural effect
+            const animationDelay = Math.random() * 4; // Extended stagger
+
+            // Size-based fall duration (larger petals fall slower due to air resistance)
+            const baseDuration = 5 + Math.random() * 2.5;
+            const sizeFactor = sizeIndex === 0 ? 0.9 : sizeIndex === 3 ? 1.3 : 1;
+            const animationDuration = baseDuration * sizeFactor;
+
+            // Generate multiple drift values for complex motion path
+            const driftVariations = {};
+            for (let d = 1; d <= 6; d++) {
+              // Natural wind patterns with occasional stronger gusts
+              const baseWind = (Math.random() - 0.5) * 25;
+              const gustChance = Math.random();
+              const gustMultiplier = gustChance < 0.1 ? 2.5 : gustChance < 0.3 ? 1.5 : 1;
+              driftVariations[`--drift-${d}`] = `${baseWind * gustMultiplier}px`;
+            }
+
+            // Natural rotation variations
+            const rotationSpeed = 0.8 + Math.random() * 1.4;
+            const rotationDirection = Math.random() > 0.5 ? 1 : -1;
+
+            // Slight initial tilt for more natural appearance
+            const initialTilt = (Math.random() - 0.5) * 15;
+
+            pieces.push(
+              <div
+                key={i}
+                className={`tw-confetti-piece ${sizeClass}`}
+                style={{
+                  left: `${left}%`,
+                  animationDelay: `${animationDelay}s`,
+                  '--fall-duration': `${animationDuration}s`,
+                  '--rotation-direction': rotationDirection,
+                  '--rotation-speed': rotationSpeed,
+                  '--initial-tilt': `${initialTilt}deg`,
+                  ...driftVariations
+                }}
+              />
+            );
+          }
+          return pieces;
         };
 
         // Build board rows with enhanced display logic
@@ -847,8 +1208,8 @@
               statuses: guesses[r].statuses,
               type: 'completed'
             });
-          } else if (r === guesses.length) {
-            // Current input row - show partial aksharas as user types
+          } else if (r === guesses.length && !gameOver) {
+            // Current input row - only show if game is not over
             const cons = Array(wordLength).fill("");
             const partialAksharas = Array(wordLength).fill("");
             currentGuess.forEach((c, idx) => {
@@ -861,8 +1222,8 @@
               statuses: Array(wordLength).fill("empty"),
               type: 'current'
             });
-          } else {
-            // Future rows - inactive
+          } else if (!gameOver) {
+            // Future rows - only show if game is not over
             rows.push({
               consonants: Array(wordLength).fill(""),
               aksharas: Array(wordLength).fill(""),
@@ -874,6 +1235,11 @@
 
         return (
           <div className="tw-app">
+            {/* Marigold Petals Celebration */}
+            <div className={`tw-confetti ${showConfetti ? 'active' : ''}`}>
+              {showConfetti && generateConfetti()}
+            </div>
+
             <header className="tw-header">
               <div className="tw-title">
                 తెలుగు Wordle
@@ -884,18 +1250,18 @@
                   {PUZZLE_TITLE}
                 </div>
                 <div className="tw-game-info">
-                  {GAME_MODE} letters
+                  {wordLength} letters
                 </div>
               </div>
 
               <div className="tw-navigation">
-                <a href="1.html" className="tw-nav-btn">
+                <a href="2.html" className="tw-nav-btn">
                   ← Previous
                 </a>
                 <a href="index.html" className="tw-nav-btn">
                   Latest
                 </a>
-                <a href="3.html" className="tw-nav-btn">
+                <a href="4.html" className="tw-nav-btn">
                   Next →
                 </a>
               </div>
@@ -965,12 +1331,13 @@
 
               <div className="tw-keyboard">
                 <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(0, 5).map((c) => {
+                  {KEYBOARD_CONSONANTS.slice(0, 8).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
+                    const isGroupEnd = c === "ఘ"; // End of velars
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -979,12 +1346,13 @@
                   })}
                 </div>
                 <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(5, 10).map((c) => {
+                  {KEYBOARD_CONSONANTS.slice(8, 16).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
+                    const isGroupEnd = c === "ణ"; // End of retroflexes
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -993,12 +1361,13 @@
                   })}
                 </div>
                 <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(10, 15).map((c) => {
+                  {KEYBOARD_CONSONANTS.slice(16, 24).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
+                    const isGroupEnd = c === "న" || c === "మ"; // End of dentals, end of labials
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -1007,54 +1376,13 @@
                   })}
                 </div>
                 <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(15, 20).map((c) => {
+                  {KEYBOARD_CONSONANTS.slice(24).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
+                    const isGroupEnd = c === "వ"; // End of semivowels (ర ల వ)
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st}`}
-                        onClick={() => handleKeyClick(c)}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(20, 25).map((c) => {
-                    const st = keyboardStatus.get(c) || "empty";
-                    return (
-                      <button
-                        key={c}
-                        className={`tw-key ${st}`}
-                        onClick={() => handleKeyClick(c)}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(25, 30).map((c) => {
-                    const st = keyboardStatus.get(c) || "empty";
-                    return (
-                      <button
-                        key={c}
-                        className={`tw-key ${st}`}
-                        onClick={() => handleKeyClick(c)}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="tw-keyboard-row">
-                  {KEYBOARD_CONSONANTS.slice(30).map((c) => {
-                    const st = keyboardStatus.get(c) || "empty";
-                    return (
-                      <button
-                        key={c}
-                        className={`tw-key ${st}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}

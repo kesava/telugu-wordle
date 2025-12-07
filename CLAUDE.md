@@ -9,7 +9,7 @@ This is a **Telugu Language Wordle Game** - a template-based system that generat
 ### Key Features
 - Native Telugu language support (తెలుగు)
 - Sequence-based puzzles (#1, #2, #3...) instead of daily
-- Two difficulty modes: 3-letter and 4-letter words (code-configurable)
+- Flexible word lengths: supports both 3-letter and 4-letter words automatically
 - Gunintam (vowel sign) hints displayed for each position
 - Players input only consonants; vowels are pre-filled from hint pattern
 
@@ -77,22 +77,28 @@ python -m http.server 8000  # then visit http://localhost:8000/puddle.html
 #### Template Configuration (template.html)
 ```javascript
 // Key constants injected by generator:
-const GAME_MODE = __GAME_MODE__;        // From words.json gameMode
 const CURRENT_PUZZLE = __PUZZLE_ID__;   // Individual puzzle ID
 const PUZZLE_WORD = __PUZZLE_WORD__;    // Individual puzzle word array
 const PUZZLE_TITLE = "__PUZZLE_TITLE__"; // Individual puzzle title
+// Word length automatically determined from PUZZLE_WORD.length
 ```
 
 #### Words Configuration (words.json)
 ```json
 {
-  "gameMode": 4,
+  "gameMode": 4,  // Optional, for documentation/compatibility
   "puzzles": [
     {
       "id": 1,
-      "word": ["అ", "ల", "స", "ట"],
+      "word": ["అ", "ల", "స", "ట"],      // 4-letter word
       "title": "Puzzle #1",
       "description": "Tiredness"
+    },
+    {
+      "id": 2,
+      "word": ["వ", "రు", "స"],          // 3-letter word (also supported!)
+      "title": "Puzzle #2",
+      "description": "In sequence"
     }
   ]
 }

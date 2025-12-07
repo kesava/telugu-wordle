@@ -30,7 +30,6 @@ function generatePuzzles() {
 
     // Replace template placeholders
     let html = template
-      .replace(/const GAME_MODE = 4;/g, `const GAME_MODE = ${data.gameMode};`)
       .replace(/const CURRENT_PUZZLE = 1;/g, `const CURRENT_PUZZLE = ${puzzleId};`)
       .replace(/const PUZZLE_WORD = \["మా", "తి", "పు", "లు"\];/g, `const PUZZLE_WORD = ${JSON.stringify(puzzle.word)};`)
       .replace(/const PUZZLE_TITLE = "Puzzle #1";/g, `const PUZZLE_TITLE = "${puzzle.title}";`)
