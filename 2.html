@@ -983,7 +983,7 @@
 
     <!-- React code -->
     <script type="text/babel">
-      const { useState, useMemo } = React;
+      const { useState, useMemo, useRef, useEffect } = React;
 
       // Gunintam (vowel sign) characters in Telugu
       const GUNINTAM_SIGNS = [
@@ -1084,6 +1084,9 @@
         const [gameOver, setGameOver] = useState(false);
         const [showConfetti, setShowConfetti] = useState(false);
 
+        // Ref for auto-scrolling to active row
+        const activeRowRef = useRef(null);
+
         // Prevent mobile keyboard from showing
         React.useEffect(() => {
           const preventKeyboard = (e) => {
@@ -1106,6 +1109,20 @@
             document.removeEventListener('touchstart', handleTouchStart);
           };
         }, []);
+
+        // Auto-scroll to keep active row visible
+        useEffect(() => {
+          if (activeRowRef.current && !gameOver) {
+            // Small delay to ensure DOM is updated
+            setTimeout(() => {
+              activeRowRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+              });
+            }, 100);
+          }
+        }, [guesses.length, gameOver]); // Scroll when new row becomes active
 
         // Vowel pattern clue: taken from solution, fixed for the whole game.
         const vowelPattern = useMemo(
@@ -1344,7 +1361,11 @@
             <main className="tw-main">
               <div className="tw-board">
                 {rows.map((row, rIdx) => (
-                  <div className={`tw-row ${row.type === 'future' ? 'tw-row-inactive' : ''}`} key={rIdx}>
+                  <div
+                    className={`tw-row ${row.type === 'future' ? 'tw-row-inactive' : ''}`}
+                    key={rIdx}
+                    ref={row.type === 'current' ? activeRowRef : null}
+                  >
                     {Array.from({ length: wordLength }).map((_, cIdx) => {
                       const st = row.statuses[cIdx];
                       const vowel = vowelPattern[cIdx] || "";
