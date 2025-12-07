@@ -928,6 +928,40 @@
           display: none;
         }
       }
+
+      /* Footer styling */
+      .tw-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(15, 15, 35, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        color: var(--text-dim);
+        font-size: 0.65rem;
+        text-align: center;
+        padding: 4px 8px;
+        z-index: 50;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+      }
+
+      .tw-footer a {
+        color: var(--accent-primary);
+        text-decoration: none;
+      }
+
+      .tw-footer a:hover {
+        color: var(--accent-secondary);
+      }
+
+      @media (max-width: 400px) {
+        .tw-footer {
+          font-size: 0.6rem;
+          padding: 3px 6px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1423,6 +1457,11 @@
                 </div>
               </div>
             </main>
+
+            {/* Footer */}
+            <footer className="tw-footer">
+              created by <a href="https://github.com/kesava" target="_blank" rel="noopener noreferrer">kesava</a> with ❤️
+            </footer>
           </div>
         );
       }
