@@ -36,13 +36,11 @@ function generatePuzzles() {
       .replace(/const PUZZLE_TITLE = "Puzzle #1";/g, `const PUZZLE_TITLE = "${puzzle.title}";`)
       .replace(/తెలుగు Wordle - Puzzle #1/g, `తెలుగు Wordle - ${puzzle.title}`)
 
-      // Navigation URLs and states
-      .replace(/href="#"/g, prevPuzzleId ? `href="${prevPuzzleId}.html"` : 'href="#"')
-      .replace(/href="2\.html"/g, nextPuzzleId ? `href="${nextPuzzleId}.html"` : 'href="#"')
-      .replace(/style=\{pointerEvents: 'none', opacity: '0\.4'\}/g,
-        prevPuzzleId ? '' : `style={{pointerEvents: 'none', opacity: '0.4'}}`)
-      .replace(/className="tw-nav-btn">[\s]*Next →/g,
-        nextPuzzleId ? `className="tw-nav-btn">Next →` : `className="tw-nav-btn" style={{pointerEvents: 'none', opacity: '0.4'}}>Next →`);
+      // Navigation URLs and styles
+      .replace(/__PREV_LINK__/g, prevPuzzleId ? `${prevPuzzleId}.html` : '#')
+      .replace(/__NEXT_LINK__/g, nextPuzzleId ? `${nextPuzzleId}.html` : '#')
+      .replace(/__PREV_STYLE__/g, prevPuzzleId ? '{}' : '{{pointerEvents: "none", opacity: "0.4"}}')
+      .replace(/__NEXT_STYLE__/g, nextPuzzleId ? '{}' : '{{pointerEvents: "none", opacity: "0.4"}}');
 
     // Write the puzzle file
     const filename = `${puzzleId}.html`;
