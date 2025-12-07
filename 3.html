@@ -505,10 +505,21 @@
         background: var(--bg-tertiary);
       }
 
+      /* Secondary consonants - less prominent */
+      .tw-key.secondary {
+        opacity: 0.7;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
       .tw-key.absent {
-        background: #3a3a50 !important;
-        border-color: #3a3a50 !important;
-        color: #b8b8c0 !important;
+        background: #8b4747 !important;  /* Light red for absent */
+        border-color: #8b4747 !important;
+        box-shadow: none !important;
+        color: #ffcccc !important;
+        opacity: 0.6 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;  /* Make unclickable */
       }
 
       .tw-key.present {
@@ -940,43 +951,25 @@
         }
       }
 
-      /* Footer styling */
-      .tw-footer {
-        position: fixed;
-        bottom: 340px; /* Well above entire keyboard area */
-        left: 50%;
-        transform: translateX(-50%);
-        width: auto;
-        max-width: 300px;
-        background: rgba(15, 15, 35, 0.7);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+      /* Game completion credit styling */
+      .tw-credit {
         color: var(--text-dim);
-        font-size: 0.6rem;
+        font-size: 0.7rem;
         text-align: center;
-        padding: 3px 8px;
-        z-index: 90; /* Below keyboard but above content */
+        padding: 8px 16px;
+        margin-top: 12px;
         font-weight: 400;
         letter-spacing: 0.3px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0.8;
       }
 
-      .tw-footer a {
+      .tw-credit a {
         color: var(--accent-primary);
         text-decoration: none;
       }
 
-      .tw-footer a:hover {
+      .tw-credit a:hover {
         color: var(--accent-secondary);
-      }
-
-      @media (max-width: 400px) {
-        .tw-footer {
-          font-size: 0.55rem;
-          padding: 2px 6px;
-          bottom: 300px; /* High above mobile keyboard */
-        }
       }
     </style>
   </head>
@@ -1014,6 +1007,9 @@
         "ధ", "న", "ప", "ఫ", "బ", "భ", "మ", "య",        // Row 3: Dentals + Labials + Semivowel (8)
         "ర", "ల", "వ", "శ", "ష", "స", "హ", "ళ"         // Row 4: Semivowels + Sibilants + Others (8)
       ];
+
+      // Secondary/less common consonants (aspirated and specialized)
+      const SECONDARY_CONSONANTS = ["ఖ", "ఘ", "ఛ", "ఝ", "ఠ", "ఢ", "ణ", "థ", "ధ", "ఫ", "భ", "శ", "ష", "ళ"];
 
       // Helper: split aksharam into [baseConsonant, gunintam]
       function splitAksharam(ak) {
@@ -1402,15 +1398,23 @@
                 {message && <div className="tw-message">{message}</div>}
               </div>
 
+              {/* Creator credit - only show when game is finished */}
+              {gameOver && (
+                <div className="tw-credit">
+                  created by <a href="https://kesava.github.io/" target="_blank" rel="noopener noreferrer">kesava</a> with ❤️
+                </div>
+              )}
+
               <div className="tw-keyboard">
                 <div className="tw-keyboard-row">
                   {KEYBOARD_CONSONANTS.slice(0, 8).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
                     const isGroupEnd = c === "ఘ"; // End of velars
+                    const isSecondary = SECONDARY_CONSONANTS.includes(c);
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''} ${isSecondary ? 'secondary' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -1422,10 +1426,11 @@
                   {KEYBOARD_CONSONANTS.slice(8, 16).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
                     const isGroupEnd = c === "ణ"; // End of retroflexes
+                    const isSecondary = SECONDARY_CONSONANTS.includes(c);
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''} ${isSecondary ? 'secondary' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -1437,10 +1442,11 @@
                   {KEYBOARD_CONSONANTS.slice(16, 24).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
                     const isGroupEnd = c === "న" || c === "మ"; // End of dentals, end of labials
+                    const isSecondary = SECONDARY_CONSONANTS.includes(c);
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''} ${isSecondary ? 'secondary' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -1452,10 +1458,11 @@
                   {KEYBOARD_CONSONANTS.slice(24).map((c) => {
                     const st = keyboardStatus.get(c) || "empty";
                     const isGroupEnd = c === "వ"; // End of semivowels (ర ల వ)
+                    const isSecondary = SECONDARY_CONSONANTS.includes(c);
                     return (
                       <button
                         key={c}
-                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''}`}
+                        className={`tw-key ${st} ${isGroupEnd ? 'group-end' : ''} ${isSecondary ? 'secondary' : ''}`}
                         onClick={() => handleKeyClick(c)}
                       >
                         {c}
@@ -1474,10 +1481,6 @@
               </div>
             </main>
 
-            {/* Footer */}
-            <footer className="tw-footer">
-              created by <a href="https://github.com/kesava" target="_blank" rel="noopener noreferrer">kesava</a> with ❤️
-            </footer>
           </div>
         );
       }
