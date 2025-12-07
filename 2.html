@@ -527,12 +527,12 @@
       }
 
       /* Mobile-first responsive adjustments */
-      /* Small mobile devices - iPhone and similar (≤ 400px) - Ultra Aggressive Fix */
+      /* iPhone CSS Grid Fix - Forces exact 8-column layout */
       @media (max-width: 400px) {
         .tw-app {
-          padding: env(safe-area-inset-top, 4px) 2px 0 !important;
+          padding: env(safe-area-inset-top, 4px) 1px 0 !important;
           gap: 4px;
-          padding-bottom: 270px; /* Reduced space for fixed keyboard */
+          padding-bottom: 270px;
         }
         .tw-header {
           margin-bottom: 4px;
@@ -565,32 +565,46 @@
           gap: 3px;
         }
         .tw-keyboard {
-          padding: 2px !important;
+          padding: 1px !important;
           gap: 1px !important;
-          padding-bottom: calc(2px + env(safe-area-inset-bottom, 0)) !important;
+          padding-bottom: calc(1px + env(safe-area-inset-bottom, 0)) !important;
+          width: 100% !important;
           max-width: 100% !important;
         }
         .tw-keyboard-row {
+          display: grid !important;
+          grid-template-columns: repeat(8, 1fr) !important;
           gap: 1px !important;
-          flex-wrap: nowrap !important;
-          justify-content: space-between !important;
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
         .tw-key {
-          min-width: 26px !important;
-          max-width: 26px !important;
-          height: 34px !important;
-          font-size: 0.65rem !important;
-          padding: 0 1px !important;
+          width: 100% !important;
+          min-width: unset !important;
+          max-width: 100% !important;
+          height: 32px !important;
+          font-size: 0.6rem !important;
+          padding: 0 !important;
           margin: 0 !important;
           border-width: 1px !important;
+          box-sizing: border-box !important;
         }
         .tw-key.group-end {
-          margin-right: 0px !important; /* Remove ALL extra spacing on mobile */
+          margin-right: 0px !important;
+        }
+        .tw-keyboard-controls {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+          margin-top: 4px !important;
         }
         .tw-key.special {
-          min-width: 44px !important;
-          max-width: 44px !important;
-          font-size: 0.55rem !important;
+          width: 100% !important;
+          min-width: unset !important;
+          max-width: 100% !important;
+          font-size: 0.5rem !important;
+          height: 32px !important;
         }
       }
 
