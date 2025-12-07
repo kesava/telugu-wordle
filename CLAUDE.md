@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Telugu Language Wordle Game** - a single-file web application that implements a variant of Wordle using Telugu script. The game uses a **sequence-based puzzle system** instead of daily puzzles, making it perfect for irregular publishing schedules.
+This is a **Telugu Language Wordle Game** - a template-based system that generates individual puzzle HTML files for a variant of Wordle using Telugu script. The game uses a **sequence-based puzzle system** instead of daily puzzles, making it perfect for irregular publishing schedules.
 
 ### Key Features
 - Native Telugu language support (తెలుగు)
@@ -14,6 +14,23 @@ This is a **Telugu Language Wordle Game** - a single-file web application that i
 - Players input only consonants; vowels are pre-filled from hint pattern
 
 ## Development Commands
+
+### Template System (IMPORTANT)
+```bash
+# ONLY edit the template file:
+template.html  # ← Make ALL changes here
+
+# Generated files (DO NOT EDIT MANUALLY):
+1.html, 2.html, 3.html, 4.html, 5.html, 6.html  # ← Never edit these directly
+
+# Regenerate all puzzle files after editing template:
+node generate.js
+
+# Deploy to GitHub Pages:
+npm run deploy
+```
+
+**CRITICAL RULE**: Always edit `template.html` only. Never manually edit generated puzzle files (`1.html`, `2.html`, etc.) as they will be overwritten when regenerated.
 
 ### Running the Application
 ```bash
@@ -29,25 +46,56 @@ python -m http.server 8000  # then visit http://localhost:8000/puddle.html
 - **Test unavailable puzzle**: `http://localhost:8000/puddle.html?puzzle=99`
 
 ### Publishing Workflow
-1. Add new word to appropriate word array
-2. Increment `CURRENT_PUZZLE` constant
-3. Test locally with new puzzle number
-4. Commit and push for automatic deployment
+1. Add new puzzle to `words.json`
+2. Run `node generate.js` to create puzzle files
+3. Test locally with new puzzle
+4. Deploy with `npm run deploy` for GitHub Pages
 
 ## Architecture Overview
 
-### Single-File Structure
-- **puddle.html**: Complete self-contained application (HTML + CSS + JavaScript)
+### Template-Based System
+- **template.html**: Master template for generating puzzle files (HTML + CSS + JavaScript)
+- **generate.js**: Node.js script that creates individual puzzle files (1.html, 2.html, etc.)
+- **words.json**: Configuration file containing puzzle data and settings
+- **index.html**: Generated puzzle directory with links to all puzzles
 - **No build system**: Uses React 18 + ReactDOM + Babel from CDN
 - **Runtime JSX transpilation**: Babel Standalone processes JSX in-browser
 
+### Generated Files Structure
+```
+├── template.html      # Master template (EDIT THIS)
+├── generate.js        # Generator script
+├── words.json         # Puzzle configuration
+├── index.html         # Generated puzzle directory
+├── 1.html            # Generated puzzle #1 (DO NOT EDIT)
+├── 2.html            # Generated puzzle #2 (DO NOT EDIT)
+└── ...               # More generated puzzles
+```
+
 ### Core Components
 
-#### Sequence-Based Configuration
+#### Template Configuration (template.html)
 ```javascript
-// Key constants in puddle.html:520-525
-const GAME_MODE = 4;        // 3 or 4 letter words
-const CURRENT_PUZZLE = 1;   // Latest available puzzle number
+// Key constants injected by generator:
+const GAME_MODE = __GAME_MODE__;        // From words.json gameMode
+const CURRENT_PUZZLE = __PUZZLE_ID__;   // Individual puzzle ID
+const PUZZLE_WORD = __PUZZLE_WORD__;    // Individual puzzle word array
+const PUZZLE_TITLE = "__PUZZLE_TITLE__"; // Individual puzzle title
+```
+
+#### Words Configuration (words.json)
+```json
+{
+  "gameMode": 4,
+  "puzzles": [
+    {
+      "id": 1,
+      "word": ["అ", "ల", "స", "ట"],
+      "title": "Puzzle #1",
+      "description": "Tiredness"
+    }
+  ]
+}
 ```
 
 #### Telugu Language Processing
@@ -117,16 +165,28 @@ MAX_ROWS = 6  // Maximum guesses allowed
 ## Important Implementation Details
 
 ### Publishing New Puzzles
-```javascript
-// 1. Add word to appropriate array
-const WORDS_4 = [
-  ["మా", "తి", "పు", "లు"],  // Puzzle #1
-  ["న్యూ", "వర్డ్", "హీర్", "!"], // Puzzle #2 ← Add here
-];
-
-// 2. Update current puzzle number
-const CURRENT_PUZZLE = 2; // ← Increment this
+```json
+// Add to words.json puzzles array:
+{
+  "gameMode": 4,
+  "puzzles": [
+    {
+      "id": 1,
+      "word": ["అ", "ల", "స", "ట"],
+      "title": "Puzzle #1",
+      "description": "Tiredness"
+    },
+    {
+      "id": 2,
+      "word": ["క", "మ", "ల", "ము"],
+      "title": "Puzzle #2",
+      "description": "Lotus"
+    }
+  ]
+}
 ```
+
+Then regenerate: `node generate.js`
 
 ### Telugu Character Handling
 - **Aksharas** contain base consonant + optional gunintam
@@ -154,12 +214,17 @@ const CURRENT_PUZZLE = 2; // ← Increment this
 
 ## File Locations
 
-- **Main application**: `puddle.html` (lines 1-933)
-- **CSS styles**: Embedded in puddle.html (lines 10-470)
-- **JavaScript logic**: Embedded in puddle.html (lines 475-933)
-- **Configuration**: Lines 520-525 (GAME_MODE, CURRENT_PUZZLE)
-- **Word lists**: Lines 527-553 (WORDS_3, WORDS_4)
-- **VS Code settings**: `.vscode/settings.json` (dark theme customization only)
+### Template System Files
+- **Master template**: `template.html` (EDIT THIS ONLY)
+- **Configuration**: `words.json` (puzzle data and settings)
+- **Generator**: `generate.js` (creates puzzle files)
+- **Package config**: `package.json` (npm scripts)
+
+### Generated Files (DO NOT EDIT MANUALLY)
+- **Puzzle files**: `1.html`, `2.html`, `3.html`, etc.
+- **Directory**: `index.html` (puzzle navigation)
+
+**REMINDER**: Always edit `template.html`, never the generated `.html` files.
 
 ## Telugu Language Notes
 

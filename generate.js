@@ -39,8 +39,8 @@ function generatePuzzles() {
       // Navigation URLs and styles
       .replace(/__PREV_LINK__/g, prevPuzzleId ? `${prevPuzzleId}.html` : '#')
       .replace(/__NEXT_LINK__/g, nextPuzzleId ? `${nextPuzzleId}.html` : '#')
-      .replace(/__PREV_STYLE__/g, prevPuzzleId ? '{}' : '{{pointerEvents: "none", opacity: "0.4"}}')
-      .replace(/__NEXT_STYLE__/g, nextPuzzleId ? '{}' : '{{pointerEvents: "none", opacity: "0.4"}}');
+      .replace(/__PREV_STYLE__/g, prevPuzzleId ? '' : ' style={{pointerEvents: "none", opacity: "0.4"}}')
+      .replace(/__NEXT_STYLE__/g, nextPuzzleId ? '' : ' style={{pointerEvents: "none", opacity: "0.4"}}');
 
     // Write the puzzle file
     const filename = `${puzzleId}.html`;
