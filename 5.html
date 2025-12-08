@@ -252,6 +252,16 @@
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       }
 
+      .tw-tile-oththu {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--accent-secondary);
+        margin-bottom: 2px;
+        min-height: 12px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        opacity: 0.9;
+      }
+
       .tw-tile-aksharam {
         font-size: 1.4rem;
         font-weight: 700;
@@ -1015,19 +1025,22 @@
     <script type="text/babel">
       const { useState, useMemo, useRef, useEffect } = React;
 
-      // Gunintam (vowel sign) characters in Telugu
+      // Gunintam (vowel signs) and Oththulu (diacritical marks) in Telugu
       const GUNINTAM_SIGNS = [
-        "ా",
-        "ి",
-        "ీ",
-        "ు",
-        "ూ",
-        "ె",
-        "ే",
-        "ై",
-        "ొ",
-        "ో",
-        "ౌ"
+        "ా",  // aa
+        "ి",  // i
+        "ీ",  // ii
+        "ు",  // u
+        "ూ",  // uu
+        "ె",  // e
+        "ే",  // ee
+        "ై",  // ai
+        "ొ",  // o
+        "ో",  // oo
+        "ౌ",  // au
+        "ం",  // anusvara (nasal)
+        "ః",  // visarga (breath)
+        "్"   // halanta/virama (consonant cluster marker)
       ];
 
       // Base consonants keyboard – user enters only these.
@@ -1041,19 +1054,44 @@
       // Secondary/less common consonants (aspirated and specialized)
       const SECONDARY_CONSONANTS = ["ఖ", "ఘ", "ఛ", "ఝ", "ఠ", "ఢ", "ణ", "థ", "ధ", "ఫ", "భ", "శ", "ష", "ళ"];
 
-      // Helper: split aksharam into [baseConsonant, gunintam]
+      // Helper: split aksharam into [baseConsonant, gunintam, oththu]
       function splitAksharam(ak) {
-        if (!ak) return ["", ""];
-        const last = ak[ak.length - 1];
-        if (GUNINTAM_SIGNS.includes(last)) {
-          return [ak.slice(0, ak.length - 1), last];
+        if (!ak) return ["", "", ""];
+
+        let gunintam = "";
+        let oththu = "";
+        let base = ak;
+
+        // Check for halanta/virama (consonant cluster marker) first
+        if (ak.includes("్")) {
+          const parts = ak.split("్");
+          if (parts.length === 2 && parts[1]) {
+            // Consonant cluster like "ష్ట" - show the second consonant "ట" as oththu
+            oththu = parts[1]; // oththu: "ట"
+            base = ak; // keep full cluster
+          }
         }
-        // no explicit gunintam (inherent అ)
-        return [ak, ""];
+
+        // Check for gunintam (vowel signs)
+        const gunintamSigns = ["ా", "ి", "ీ", "ు", "ూ", "ె", "ే", "ై", "ొ", "ో", "ౌ", "ం", "ః"];
+        for (let i = 0; i < gunintamSigns.length; i++) {
+          const sign = gunintamSigns[i];
+          if (ak.includes(sign)) {
+            gunintam = sign;
+            base = ak.replace(sign, "");
+            break;
+          }
+        }
+
+        return [base, gunintam, oththu];
       }
 
       function getGunintam(ak) {
         return splitAksharam(ak)[1];
+      }
+
+      function getOththu(ak) {
+        return splitAksharam(ak)[2];
       }
 
       function getBaseConsonant(ak) {
@@ -1165,9 +1203,15 @@
           }
         }, [guesses.length, gameOver]); // Scroll when new row becomes active or game ends
 
-        // Vowel pattern clue: taken from solution, fixed for the whole game.
+        // Vowel pattern clue: taken from solution, fixed for the whole game (includes gunintam & oththulu).
         const vowelPattern = useMemo(
           () => solution.map((ak) => getGunintam(ak)),
+          [solution]
+        );
+
+        // Oththu pattern clue: conjunct consonants from solution
+        const oththuPattern = useMemo(
+          () => solution.map((ak) => getOththu(ak)),
           [solution]
         );
 
@@ -1215,9 +1259,20 @@
             return;
           }
 
-          // Build full aksharalu from consonant + given gunintam pattern
+          // Build full aksharalu from consonant + given gunintam pattern + oththu pattern
           const guessAksharas = currentGuess.map(
-            (c, i) => c + (vowelPattern[i] || "")
+            (c, i) => {
+              if (oththuPattern[i]) {
+                // Mix consonant cluster: user consonant + halanta + oththu consonant
+                return c + "్" + oththuPattern[i];
+              } else if (vowelPattern[i]) {
+                // Add gunintam (vowel sign)
+                return c + vowelPattern[i];
+              } else {
+                // Just the consonant (inherent vowel)
+                return c;
+              }
+            }
           );
 
           // Always evaluate the guess - comparing consonants only
@@ -1382,10 +1437,25 @@
         const rows = [];
         for (let r = 0; r < MAX_ROWS; r++) {
           if (r < guesses.length) {
-            // Completed row - show full aksharas
-            const fullAksharas = guesses[r].consonants.map((cons, i) =>
-              cons + (vowelPattern[i] || "")
-            );
+            // Completed row - show constructed aksharas (user input + clues)
+            const fullAksharas = guesses[r].consonants.map((cons, i) => {
+              if (guesses[r].statuses[i] === "correct") {
+                // Correct guess - show the full solution aksharam
+                return solution[i];
+              } else {
+                // Wrong guess - show user input combined with clues
+                if (oththuPattern[i]) {
+                  // Mix consonant cluster: user consonant + halanta + oththu consonant
+                  return cons + "్" + oththuPattern[i];
+                } else if (vowelPattern[i]) {
+                  // Add gunintam (vowel sign)
+                  return cons + vowelPattern[i];
+                } else {
+                  // Just the consonant (inherent vowel)
+                  return cons;
+                }
+              }
+            });
             rows.push({
               consonants: guesses[r].consonants,
               aksharas: fullAksharas,
@@ -1398,7 +1468,16 @@
             const partialAksharas = Array(wordLength).fill("");
             currentGuess.forEach((c, idx) => {
               cons[idx] = c;
-              partialAksharas[idx] = c + (vowelPattern[idx] || "");
+              if (oththuPattern[idx]) {
+                // Show mixed consonant cluster as user types
+                partialAksharas[idx] = c + "్" + oththuPattern[idx];
+              } else if (vowelPattern[idx]) {
+                // Show consonant with vowel sign
+                partialAksharas[idx] = c + vowelPattern[idx];
+              } else {
+                // Just the consonant
+                partialAksharas[idx] = c;
+              }
             });
             rows.push({
               consonants: cons,
@@ -1445,14 +1524,14 @@
                 <a href="index.html" className="tw-nav-btn">
                   Latest
                 </a>
-                <a href="#" className="tw-nav-btn">
+                <a href="6.html" className="tw-nav-btn">
                   Next →
                 </a>
               </div>
             </header>
 
             <div className="tw-subtitle">
-              <strong>Vowel signs (gunintam)</strong> are given as clues.
+              <strong>Vowel signs (gunintam) & diacritics (oththulu)</strong> are given as clues.
               <strong> Guess only consonants</strong> to form complete Telugu syllables!
             </div>
 
@@ -1467,6 +1546,7 @@
                     {Array.from({ length: wordLength }).map((_, cIdx) => {
                       const st = row.statuses[cIdx];
                       const vowel = vowelPattern[cIdx] || "";
+                      const oththu = oththuPattern[cIdx] || "";
                       const aksharam = row.aksharas[cIdx] || "";
                       const consonant = row.consonants[cIdx] || "";
 
@@ -1504,6 +1584,9 @@
                                   {aksharam || consonant || ""}
                                 </span>
                               )}
+                            </div>
+                            <div className="tw-tile-oththu">
+                              {oththu || "\u00A0"}
                             </div>
                           </div>
                         </div>
