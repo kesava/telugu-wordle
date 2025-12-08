@@ -1117,6 +1117,7 @@
         // Ref for auto-scrolling to active row
         const activeRowRef = useRef(null);
         const creditRef = useRef(null);
+        const shareButtonRef = useRef(null);
 
         // Prevent mobile keyboard from showing
         React.useEffect(() => {
@@ -1141,12 +1142,12 @@
           };
         }, []);
 
-        // Auto-scroll to keep active row visible or show credit when game ends
+        // Auto-scroll to keep active row visible or show share button when game ends
         useEffect(() => {
-          if (gameOver && creditRef.current) {
-            // Scroll to credit when game is finished
+          if (gameOver && shareButtonRef.current) {
+            // Scroll to share button when game is finished
             setTimeout(() => {
-              creditRef.current?.scrollIntoView({
+              shareButtonRef.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',
                 inline: 'nearest'
@@ -1269,7 +1270,7 @@
 
           const result = isWin ? `${attempts}/${MAX_ROWS}` : `X/${MAX_ROWS}`;
 
-          return `తెలుగు Wordle ${PUZZLE_TITLE} ${result}\n\n${grid}\n\nPlay at: https://kesava.github.io/telugu-wordle/`;
+          return `తెలుగు Wordle ${PUZZLE_TITLE} ${result}\n\n${grid}\n\nPlay at: https://kesava.github.io/telugu-wordle/${CURRENT_PUZZLE}.html`;
         };
 
         // Handle share button click
@@ -1525,7 +1526,7 @@
 
               {/* Share button - only show when game is finished */}
               {gameOver && (
-                <button className="tw-share-button" onClick={handleShare}>
+                <button className="tw-share-button" ref={shareButtonRef} onClick={handleShare}>
                   📱 Share Results
                 </button>
               )}
